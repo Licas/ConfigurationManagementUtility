@@ -4,6 +4,7 @@ var http = require('http');
 var app = express();
 var router = express.Router();
 
+var api = require("./WorkerAgentApi.js")
 var config = require(__dirname + '/../conf/workeragent.js');
 
 
@@ -51,4 +52,28 @@ app.use(router);
 
     
 app.listen(app.get('port'));
+
+
+function getIPAddress() {
+  var interfaces = require('os').networkInterfaces();
+  for (var devName in interfaces) {
+    var iface = interfaces[devName];
+
+    for (var i = 0; i < iface.length; i++) {
+      var alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+        return alias.address;
+    }
+  }
+
+  return '127.0.0.1';
+}
+
+config.ip = getIPAddress();
+config.pid = process.pid;
+
+console.log("process ip : " + config.ip);
+console.log("process pid : " + process.pid);
 console.log("Worker agent listening on port: " + app.get('port'));
+
+//api.shutdownAgent();

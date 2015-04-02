@@ -11,49 +11,68 @@ var scriptsRemotePath = "/home/scripts/";
 var scriptsLocalPath = config.localscriptpath;
 	
 module.exports = {
+    getAgentStatus:getAgentStatus,
+    getAgentConfig:getAgentConfig,
+    getPIDByName:getPIDByName,
+    getProcessByPID:getProcessByPID,
+    getProcessByPID:getProcessByPID,
+    killPID:killPID,
+    killProcessByName:killProcessByName,
+    executeLocalCommand:executeLocalCommand,
+    executeRemoteCommand:executeRemoteCommand,
+    executeLocalScript:executeLocalScript,
+    executeRemoteScript:executeRemoteScript,
+    shutdownAgent:shutdownAgent
+};
 
-   
-    getAgentStatus: function() {
-    },
-    getAgentConfig: function() {
-    },
-    getPIDByName: function(processName, callback) {
+function getAgentStatus() {
+}
+    
+function getAgentConfig() {
+}
+
+function getPIDByName(processName, callback) {
         //var cmd = "ps -eo pid,command | grep -v grep | grep " + processName + " | head -1|awk '{print$2}'";
         var cmd = "ps -eo pid,command | grep -v grep | grep " + processName + " | awk '{print$1}'";
     
         return auto.run(host, user, cmd, callback);
-    },
-    getProcessByPID: function(pid, callback) {
-        var cmd = "ps -eo pid,command | grep -v grep | grep " + pid + " | awk '{$1=""; print$0}'"
+}
+  
+function getProcessByPID(pid, callback) {
+        var cmd = "ps -eo pid,command | grep -v grep | grep " + pid + " | awk '{$1=\"\"; print$0}'"
         
         return auto.run(host, user, cmd, callback);
-    },
-    
-    killPID: function(pid, callback) {
+}
+
+function killPID(pid, callback) {
         var killBillCmd = "kill -9 " + pid;
+        console.log("Gonna kill " + killBillCmd);
+        return auto.local(killBillCmd, callback);
+}
+
+function killProcessByName(processName, callback) {
+
+    var killBillCmd = "ps  -eo pid,command | grep -v grep | grep " + processName + " | awk '{print$1}' | xargs kill -9"
         
-        return auto.run(host, user, killBillCmd, callback);
-    },
+    return auto.run(host, user, killBillCmd, callback);
+}
     
-    killProcessByName: function(processName, callback) {
-        var killBillCmd = "ps  -eo pid,command | grep -v grep | grep " + processName + " | awk '{print$1}' | xargs kill -9"
-        
-        return auto.run(host, user, killBillCmd, callback);
-    },
-    executeLocalCommand: function(command, callback) {
+function executeLocalCommand(command, callback) {
         console.log("Eseguo comando locale: "+command);
 		
         var opts = {};
         
         return auto.local(command, opts, callback);
-    },
-    executeRemoteCommand: function(host, user, command, callback) {
+}
+
+function executeRemoteCommand(host, user, command, callback) {
         console.log("Eseguo comando remoto:" + command);
 		
 		
         return auto.runWithPromise(host,user, command).then(callback);
-    },
-    executeLocalScript: function(scriptName, callback) {
+}
+
+function executeLocalScript(scriptName, callback) {
      
         console.log("Eseguo script remoto:"+scriptsRemotePath+"/"+scriptName);
 		
@@ -61,8 +80,9 @@ module.exports = {
 		
         return auto.runWithPromise(host,user, executeCmd).then(callback)
        
-    },
-    executeRemoteScript: function(host, user, nodeName, hostName, templateName, callback) {
+ }
+
+function executeRemoteScript(host, user, nodeName, hostName, templateName, callback) {
         var fileName = auto.renderToTmp(templatePath+"/"+templateName, {nodeName:nodeName,hostName:hostName});
 		var fullPathTemplate = scriptsRemotePath + '/' + templateName + '.tmp';
         
@@ -95,8 +115,8 @@ module.exports = {
 			    // return auto.deleteTmp(fileName);
 			}
 		);
-    },
-	shutdownAgent: function() {
-       
-    } 
-};
+}
+
+function shutdownAgent() {
+       killPID(config.pid, function(out){ console.log("Killing in thy name"); console.log(out);});
+} 

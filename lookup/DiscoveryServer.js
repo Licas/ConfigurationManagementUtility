@@ -48,7 +48,27 @@ router.use(function(req, res, next) {
 require('./router/discoveryRouter.js')(app);
 
 app.use(router);
-
     
 app.listen(app.get('port'));
+
+
+function getIPAddress() {
+  var interfaces = require('os').networkInterfaces();
+  for (var devName in interfaces) {
+    var iface = interfaces[devName];
+
+    for (var i = 0; i < iface.length; i++) {
+      var alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+        return alias.address;
+    }
+  }
+
+  return '127.0.0.1';
+}
+
+config.ip = getIPAddress();
+
+console.log("process ip : " + config.ip);
+console.log("process pid : " + process.pid);
 console.log("Discovery agent listening on port: " + app.get('port'));
