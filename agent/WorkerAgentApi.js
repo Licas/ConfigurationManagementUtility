@@ -1,10 +1,14 @@
 var auto = require('automato').init();
-var defaultHost = "romva9050113";
-var user = "tibcobpm";
-var processName = "SOANode-Test";
+
+var config = require(__dirname + '/../conf/workeragent.js');
+
+var defaultHost = "localhost";
+var user = "user";
+var processName = "nodemon";
 
 var templatePath = "./templates";
-var scriptsRemotePath = "/home/tibcobpm/scripts/cc";
+var scriptsRemotePath = "/home/scripts/";
+var scriptsLocalPath = config.localscriptpath;
 	
 module.exports = {
 
@@ -36,15 +40,18 @@ module.exports = {
         
         return auto.run(host, user, killBillCmd, callback);
     },
-    executeLocalCommand: function(host, user, command, callback) {
-         console.log("Eseguo script remoto:"+scriptsRemotePath+"/"+scriptName);
+    executeLocalCommand: function(command, callback) {
+        console.log("Eseguo comando locale: "+command);
 		
-        var executeCmd  = 'sh ' + scriptsRemotePath + '/' + scriptName;
-		
-        return auto.runWithPromise(host,user, executeCmd)
-       
+        var opts = {};
+        
+        return auto.local(command, opts, callback);
     },
-    executeRemoteCommand: function(command, callback) {
+    executeRemoteCommand: function(host, user, command, callback) {
+        console.log("Eseguo comando remoto:" + command);
+		
+		
+        return auto.runWithPromise(host,user, command).then(callback);
     },
     executeLocalScript: function(scriptName, callback) {
      
