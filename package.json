@@ -1,0 +1,32 @@
+{
+  "name": "ConfigurationManagementUtility",
+  "version": "0.0.1",
+  "description": "NodeJS Configuration/Infrastructure management utility agent based",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Licas/ConfigurationManagementUtility.git"
+  },
+  "keywords": [
+    "nodejs",
+    "configuration",
+    "automation",
+    "agent"
+  ],
+  "author": "Manuel Morini",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Licas/ConfigurationManagementUtility/issues"
+  },
+  "homepage": "https://github.com/Licas/ConfigurationManagementUtility",
+  "dependencies": {
+    "automato": "^0.1.25",
+    "body-parser": "^1.12.2",
+    "express": "^4.12.3",
+    "http": "0.0.0",
+    "shortid": "^2.2.1"
+  }
+}
